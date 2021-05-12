@@ -1,0 +1,119 @@
+{
+  "name": "baidumap-draw",
+  "version": "0.2.0",
+  "private": false,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "compile": "npx babel src/components/baiduMap --out-dir lib --copy-files"
+  },
+  "description": "一个对百度地图进行3D编辑的组件",
+  "dependencies": {
+    "@ant-design/icons": "^4.6.2",
+    "antd": "^4.15.3",
+    "css-loader": "3.4.2",
+    "file-loader": "4.3.0",
+    "immutable": "^4.0.0-rc.12",
+    "jquery": "^3.6.0",
+    "json-loader": "^0.5.7",
+    "lodash": "^4.17.21",
+    "prop-types": "^15.7.2",
+    "react": "^17.0.2",
+    "react-bmapgl": "^0.1.19",
+    "react-color": "^2.19.3",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.4",
+    "redux": "^4.1.0",
+    "style-loader": "0.23.1",
+    "tslib": "^2.2.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.13.16",
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.14.1",
+    "@babel/preset-react": "^7.13.13",
+    "babel-plugin-import": "^1.13.3",
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^10.1.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-plugin-flowtype": "^5.7.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "react-scripts": "4.0.3"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "loose": true
+        }
+      ],
+      "@babel/preset-react"
+    ],
+    "ignore": [
+      "src/components/baiduMap/ignoreUtil"
+    ],
+    "plugins": [
+      [
+        "import",
+        {
+          "libraryName": "antd",
+          "libraryDirectory": "es",
+          "style": false
+        }
+      ]
+    ]
+  },
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ],
+    "globals": {
+      "BMapGL": "readonly",
+      "BMapLib": "readonly",
+      "mapvgl": "readonly",
+      "BMapGLLib": "readonly",
+      "BMap": "readonly"
+    },
+    "ignorePatterns": [
+      "src/components/baiduMap/ignoreUtil",
+      "src/components/baiduMap/libs"
+    ]
+  },
+  "keywords": [
+    "baidumap",
+    "draw",
+    "3d"
+  ],
+  "author": "wangyongping",
+  "license": "ISC",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/distant-xingsu/baidumap-draw.git"
+  },
+  "bugs": {
+    "url": "https://github.com/distant-xingsu/baidumap-draw/issues"
+  },
+  "homepage": "https://github.com/distant-xingsu/baidumap-draw"
+}
