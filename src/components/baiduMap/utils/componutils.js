@@ -2,11 +2,14 @@
 
 // 修改文字标题
 function setFontdataFun( value, e ) {
+    let _this = this;
     let data = this.state[value];
     data.title = e.target.value;
     this.setState( {
         [value]: data,
-    } )
+    },()=>{
+        _this.upDataFun(_this,value,'title')
+    })
 }
 
 // 修改名字建筑物
@@ -20,24 +23,31 @@ function setNamedataFun( value, e ) {
 
 // 修改宽度等样式
 function setWidthdataFun( value, key, e ) {
+    let _this = this;
     let data = this.state[value];
     data.style[key] = e;
     this.setState( {
         [value]: data,
-    } )
+    },()=>{
+        _this.upDataFun(_this,value,key)
+    })
 }
 
 // 设置边框类型
 function setBorderType( value, e ) {
+    let _this = this;
     let data = this.state[value];
     data.style.strokeStyle = e;
     this.setState( {
         [value]: data,
-    } )
+    } ,()=>{
+        _this.upDataFun(_this,value,'strokeStyle')
+    })
 }
 
 // 设置并显示颜色值 类型 是否显示弹窗 数据类型 键值 数据
 function setColorFun( type, falge, data, key, value ) {
+    let _this = this;
     if ( type === 1 ) {
         this.setState( {
             colorData: key,
@@ -52,6 +62,8 @@ function setColorFun( type, falge, data, key, value ) {
                 addLabeldata.style[key] = value;
                 this.setState( {
                     addLabeldata
+                } ,()=>{
+                    _this.upDataFun(_this,'addLabeldata',key)
                 } )
                 break
             case 'addCustomOverlaydata':
@@ -59,6 +71,8 @@ function setColorFun( type, falge, data, key, value ) {
                 addCustomOverlaydata.style[key] = value;
                 this.setState( {
                     addCustomOverlaydata
+                }  ,()=>{
+                    _this.upDataFun(_this,'addCustomOverlaydata',key)
                 } )
                 break
             case 'addMarkerData':
@@ -66,6 +80,8 @@ function setColorFun( type, falge, data, key, value ) {
                 addMarkerData.style[key] = value;
                 this.setState( {
                     addMarkerData
+                }  ,()=>{
+                    _this.upDataFun(_this,'addMarkerData',key)
                 } )
                 break
             case 'addCircleData':
@@ -73,20 +89,26 @@ function setColorFun( type, falge, data, key, value ) {
                 addCircleData.style[key] = value;
                 this.setState( {
                     addCircleData
-                } )
+                }  ,()=>{
+                    _this.upDataFun(_this,'addCircleData',key)
+                }  )
                 break
             case 'addPolylineData':
                 let addPolylineData = this.state.addPolylineData;
                 addPolylineData.style[key] = value;
                 this.setState( {
                     addPolylineData
-                } )
+                } ,()=>{
+                    _this.upDataFun(_this,'addPolylineData',key)
+                }  )
                 break
             case 'addPolygonData':
                 let addPolygonData = this.state.addPolygonData;
                 addPolygonData.style[key] = value;
                 this.setState( {
                     addPolygonData
+                }   ,()=>{
+                    _this.upDataFun(_this,'addPolygonData',key)
                 } )
                 break
             case 'add3dPolyData':
@@ -94,7 +116,9 @@ function setColorFun( type, falge, data, key, value ) {
                 add3dPolyData.style[key] = value;
                 this.setState( {
                     add3dPolyData
-                } )
+                } ,()=>{
+                    _this.upDataFun(_this,'add3dPolyData',key)
+                })
                 break
             default:
         }
@@ -139,24 +163,31 @@ function isDbClickFun( data, e ) {
 
 // 图标-Marker
 function setMarker( e ) {
+    let _this = this;
     let addMarkerData = this.state.addMarkerData;
     addMarkerData.imgSrc = e;
     this.setState( {
         addMarkerData,
-    } )
+    } ,()=>{
+        _this.upDataFun(_this,'addMarkerData','imgSrc')
+    })
 }
 
 // 图标-setCustom
 function setCustom( e ) {
+    let _this = this;
     let addCustomOverlaydata = this.state.addCustomOverlaydata;
     addCustomOverlaydata.style.dom = e;
     this.setState( {
         addCustomOverlaydata,
-    } )
+    }  ,()=>{
+        _this.upDataFun(_this,'addCustomOverlaydata','dom')
+    }  )
 }
 
 // 设置高度
 function setNewHeight( type, e ) {
+    let _this = this;
     if ( type === 1 ) {
         let add3dData = this.state.add3dData;
         add3dData.height = e;
@@ -169,6 +200,8 @@ function setNewHeight( type, e ) {
         add3dPolyData.height = e;
         this.setState( {
             add3dPolyData,
+        },()=>{
+            _this.upDataFun(_this,'add3dPolyData','height')
         })
     }
 }

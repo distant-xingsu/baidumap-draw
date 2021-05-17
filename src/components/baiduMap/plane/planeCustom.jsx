@@ -124,11 +124,9 @@ class PlaneCustom extends React.Component {
                     let newdata = new BMapGL.Point( item.data[0], item.data[1] );
                     let newsdomid = item.id ? item.id : GenNonDuplicateID();
                     let olddom = item.style ? item.style.dom ? item.style.dom : '' : '';
-                    let oldcolor = item.style ? item.style.color ? item.style.color : '#fff' : '#fff';
                     let newdom = new CustomOverlayDom( newdata, {
                         html: <div id={ newsdomid } style={{textAlign:'center'}}>
                             <div dangerouslySetInnerHTML={ { __html: olddom } }/>
-                            { item.title && <span style={ { color: oldcolor } }>{ item.title }</span> }
                         </div>,
                         config: {
                             domtype: 'planeDataCustomRoot',
@@ -177,11 +175,9 @@ class PlaneCustom extends React.Component {
                 let newdata = new BMapGL.Point( item.data[0], item.data[1] );
                 let newsdomid = item.id ? item.id : GenNonDuplicateID();
                 let olddom = item.style ? item.style.dom ? item.style.dom : '' : '';
-                let oldcolor = item.style ? item.style.color ? item.style.color : '#fff' : '#fff';
                 let newdom = new CustomOverlayDom( newdata, {
                     html: <div id={ newsdomid } style={{textAlign:'center'}}>
                         <div dangerouslySetInnerHTML={ { __html: olddom } }/>
-                        { item.title && <span style={ { color: oldcolor } }>{ item.title }</span> }
                     </div>,
                     config: {
                         domtype: 'planeDataCustomRoot',

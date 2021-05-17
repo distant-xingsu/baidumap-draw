@@ -5,7 +5,7 @@ import '../../assest/css/baidumap.css'
 import { Button, Input, message, Select, Switch } from 'antd';
 import { ChromePicker } from "react-color";
 import { isClickFun, isDbClickFun, setColorFun, setComColorFun, setFontdataFun, setMarker, setNamedataFun } from '../../utils/componutils'
-import { childrenmarkerSelect } from '../../utils/defaultParame'
+import { childrenmarkerSelect, getIcons } from '../../utils/defaultParame'
 // import actions from "../redux/actions";
 
 const { Option } = Select;
@@ -38,6 +38,8 @@ class MarkerEdit extends React.Component {
     componentDidMount() {
         // 赋值
         this.props.init( this );
+        // ref
+        this.props.onRef&&this.props.onRef(this);
     };
 
     // out
@@ -61,13 +63,13 @@ class MarkerEdit extends React.Component {
                 return
             }
             if ( fatherData.info ) {
-                map.removeOverlay( fatherData.info.overlay )
+                map.removeOverlay( fatherData.info )
             }
             resultMapView( 1, 'marker', newCircledata )
         }
         else if ( type === 2 ) {
             if ( fatherData.info ) {
-                map.removeOverlay( fatherData.info.overlay )
+                map.removeOverlay( fatherData.info )
             }
             chicerData.name = '';
             chicerData.title = '';
@@ -86,6 +88,34 @@ class MarkerEdit extends React.Component {
                 colorData: '',
             } )
             resultMapView( 2, 'marker' )
+        }
+    }
+
+    // 更改
+    upDataFun( _this,_type,_key ) {
+        if ( _type === 'addMarkerData' ) {
+            let newobj = Object.assign( _this.props.addMarkerData, _this.state.addMarkerData );
+            if ( newobj.info ) {
+                if(_key==='imgSrc'){
+                    newobj.info.setIcon(getIcons( newobj[_key] ))
+                }
+                let newoblLde = newobj.info.getLabel()?newobj.info.getLabel():false;
+                if(newoblLde){
+                    if(_key==='title'){
+                        newoblLde.setContent(newobj[_key])
+                        newoblLde.setOffset(setOfFset(newobj[_key]))
+                    }else if(_key==='backgroundColor'||_key==='color'||_key==='borderColor'){
+                        newoblLde.setStyle(newobj.style)
+                    }
+                }
+            }
+        }
+        function setOfFset( data ) {
+            let lodSize;
+            let dataleng = data.length;
+            dataleng = dataleng * 8;
+            lodSize = new BMapGL.Size( - dataleng, 15 )
+            return lodSize
         }
     }
 

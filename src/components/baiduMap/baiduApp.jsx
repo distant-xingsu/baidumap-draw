@@ -83,6 +83,8 @@ BaiduApp.propTypes = {
     resuleFun: PropTypes.func,
     // 地图实例
     baiduMapFun: PropTypes.func,
+    // 百度自定义图层key
+    keyCustomData: PropTypes.array,
 
     // 开启动画
     isAnimsmap: PropTypes.bool,

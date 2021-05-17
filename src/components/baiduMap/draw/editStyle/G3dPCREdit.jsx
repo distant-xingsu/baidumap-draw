@@ -1,10 +1,11 @@
-// 多边形编辑器
+// 高级3d 多边形编辑器
 import React from 'react'
 import { connect } from "react-redux";
 import '../../assest/css/baidumap.css'
 import { Button, Input, InputNumber, message, Switch } from 'antd';
 import { ChromePicker } from "react-color";
 import { isClickFun, isDbClickFun, setColorFun, setComColorFun, setNamedataFun, setNewHeight } from '../../utils/componutils'
+import { getRgbaAlp, hexify } from "../../utils/colorType";
 // import actions from "../redux/actions";
 
 class G3dPCREdit extends React.Component {
@@ -33,6 +34,8 @@ class G3dPCREdit extends React.Component {
     componentDidMount() {
         // 赋值
         this.props.init( this );
+        // ref
+        this.props.onRef&&this.props.onRef(this);
     };
 
     // out
@@ -56,13 +59,13 @@ class G3dPCREdit extends React.Component {
                 return
             }
             if ( fatherData.info ) {
-                map.removeOverlay( fatherData.info.overlay )
+                map.removeOverlay( fatherData.info )
             }
             resultMapView( 1, 'G3dpolygon', newCircledata )
         }
         else if ( type === 2 ) {
             if ( fatherData.info ) {
-                map.removeOverlay( fatherData.info.overlay )
+                map.removeOverlay( fatherData.info )
             }
             chicerData.name = '';
             chicerData.isClick = false;
@@ -82,6 +85,35 @@ class G3dPCREdit extends React.Component {
         }
     }
 
+    // 更改
+    upDataFun( _this,_type,_key ){
+        if(_type==='add3dPolyData'){
+            let newobj = Object.assign(_this.props.add3dPolyData, _this.state.add3dPolyData);
+            if(newobj.info){
+                if(_key==='height'){
+                    newobj.info.setAltitude(newobj[_key])
+                }else if(_key==='topFillColor'){
+                    let newtopFillColor = newobj.style ?
+                                          newobj.style.topFillColor ? hexify( newobj.style[_key] ) : "#00c5ff" :
+                                          "#00c5ff";
+                    let newtopFillOpacity = newobj.style ?
+                                            newobj.style.topFillColor ? getRgbaAlp(newobj.style[_key] ) : 1.0 :
+                                            1.0;
+                    newobj.info.setTopFillColor(newtopFillColor)
+                    newobj.info.setTopFillOpacity(newtopFillOpacity)
+                }else if(_key==='sideFillColor'){
+                    let newsideFillColor = newobj.style ?
+                                           newobj.style.sideFillColor ? hexify( newobj.style[_key] ) : '#195266' :
+                                           '#195266';
+                    let newsideFillOpacity = newobj.style ?
+                                             newobj.style.sideFillColor ? getRgbaAlp( newobj.style[_key] ) : 1.0 :
+                                             1.0;
+                    newobj.info.setSideFillColor(newsideFillColor)
+                    newobj.info.setSideFillOpacity(newsideFillOpacity)
+                }
+            }
+        }
+    }
     // 渲染
     render() {
         let { isColorShow, isColorShowName, colorData } = this.state;

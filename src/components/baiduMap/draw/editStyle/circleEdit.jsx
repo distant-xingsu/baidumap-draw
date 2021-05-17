@@ -6,6 +6,7 @@ import { Button, Input, InputNumber, message, Select, Switch } from 'antd';
 import { ChromePicker } from "react-color";
 import { isClickFun, isDbClickFun, setBorderType, setColorFun, setComColorFun, setNamedataFun, setWidthdataFun } from '../../utils/componutils'
 import { childrencircleSelect } from '../../utils/defaultParame'
+import { getRgbaAlp, hexify } from "../../utils/colorType";
 // import actions from "../redux/actions";
 
 const { Option } = Select;
@@ -37,6 +38,8 @@ class CircleEdit extends React.Component {
     componentDidMount() {
         // 赋值
         this.props.init( this );
+        // ref
+        this.props.onRef&&this.props.onRef(this);
     };
 
     // out
@@ -60,13 +63,13 @@ class CircleEdit extends React.Component {
                 return
             }
             if ( fatherData.info ) {
-                map.removeOverlay( fatherData.info.overlay )
+                map.removeOverlay( fatherData.info )
             }
             resultMapView( 1, 'circle', newCircledata )
         }
         else if ( type === 2 ) {
             if ( fatherData.info ) {
-                map.removeOverlay( fatherData.info.overlay )
+                map.removeOverlay( fatherData.info )
             }
             chicerData.name = '';
             chicerData.isClick = false;
@@ -84,6 +87,44 @@ class CircleEdit extends React.Component {
                 colorData: '',
             } )
             resultMapView( 2, 'circle' )
+        }
+    }
+
+    // 更改
+    upDataFun( _this,_type,_key ) {
+        if ( _type === 'addCircleData' ) {
+            let newobj = Object.assign( _this.props.addCircleData, _this.state.addCircleData );
+            if ( newobj.info ) {
+                if(_key==='strokeStyle'){
+                    let color1 = newobj.info.getStrokeColor()
+                    newobj.info.setStrokeStyle(newobj.style[_key])
+                    newobj.info.setStrokeColor('#000')
+                    setTimeout(function (  ) {
+                        newobj.info.setStrokeColor(color1)
+                    },0)
+                }else if(_key==='strokeWeight'){
+                    newobj.info.setStrokeWeight(newobj.style[_key])
+                }else if(_key==='strokeColor'){
+                    let newstrokeColor = newobj.style ?
+                                         newobj.style.strokeColor ? hexify( newobj.style[_key] ) : '#195266' :
+                                         '#195266';
+                    let newstrokeColorOpacity = newobj.style ?
+                                                newobj.style.strokeColor ? getRgbaAlp( newobj.style[_key] ) : 1.0 :
+                                                1.0;
+                    newobj.info.setStrokeColor(newstrokeColor)
+                    newobj.info.setStrokeOpacity(newstrokeColorOpacity)
+                }else if(_key==='fillColor'){
+                    let newFillColor = newobj.style ?
+                                       newobj.style.fillColor ? hexify( newobj.style[_key] ) : "#00c5ff" :
+                                       "#00c5ff";
+                    let newFillOpacity = newobj.style ?
+                                         newobj.style.fillColor ? getRgbaAlp(newobj.style[_key] ) : 1.0 :
+                                         1.0;
+                    newobj.info.setFillColor(newFillColor)
+                    newobj.info.setFillOpacity(newFillOpacity)
+                }
+
+            }
         }
     }
 

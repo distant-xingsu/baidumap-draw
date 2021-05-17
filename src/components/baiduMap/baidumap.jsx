@@ -3,6 +3,7 @@ import { connect} from 'react-redux';
 import actions from './redux/actions';
 import "./assest/css/baidumap.css";
 import StyleItem from "./assest/json/styleItemBaiduMap.json";
+import { childrenSelect } from "./utils/defaultParame";
 
 const BaidumapStart = lazy( () => import("./baidumap_start") );
 
@@ -47,6 +48,7 @@ const mapStateToProps = ( state ) => {
         tiltItem_BD: state.vars.tiltItem_BD,
         mapTypeItem_BD: state.vars.mapTypeItem_BD,
         StyleItem_BD: state.vars.StyleItem_BD,
+        keyCustomData_BD: state.lists.keyCustomData_BD,
 
         layerDataMap_BD: state.lists.layerDataMap_BD,
         standDataPoylon_BD: state.lists.standDataPoylon_BD,
@@ -106,10 +108,12 @@ const mapDispatchToProps = ( dispatch ) => {
                 dispatch( actions.setLists( 'planeDataCustom_BD', _this.props.fadata.baiduData.planeDataCustom ) )
                 dispatch( actions.setLists( 'planeDataCricle_BD', _this.props.fadata.baiduData.planeDataCricle ) )
             }
+
             dispatch( actions.setVars( 'isDeveloperEditProp_BD', _this.props.fadata&&_this.props.fadata.isDeveloperEditProp ) )
             dispatch( actions.setVars( 'isEditProp_BD', _this.props.fadata&&_this.props.fadata.isEditProp ) )
             dispatch( actions.setVars( 'resuleFun_BD', _this.props.fadata&&_this.props.fadata.resuleFun ) )
             dispatch( actions.setVars( 'baiduMapFun_BD', _this.props.fadata&&_this.props.fadata.baiduMapFun ) )
+            dispatch( actions.setLists( 'keyCustomData_BD', _this.props.fadata?_this.props.fadata.keyCustomData?_this.props.fadata.keyCustomData:childrenSelect:childrenSelect ) )
 
             dispatch( actions.setVars( 'isAnimsmap_BD', _this.props.fadata&&_this.props.fadata.isAnimsmap ) )
             dispatch( actions.setVars( 'keypatherAnim_BD', _this.props.fadata&&_this.props.fadata.keypatherAnim ) )

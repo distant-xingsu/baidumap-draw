@@ -30,7 +30,7 @@ exports.default = (function (hocProps) { return function (WrappedComponent) {
             MapApiLoaderHOC.prototype.componentDidMount = function () {
                 if (!this.isLoadReady()) {
                     if (!hocProps.ak) {
-                        throw new TypeError('MapApiLoaderHOC: ak is required');
+                        throw new TypeError('ak is required || 请填写百度ak  （https://www.npmjs.com/package/baidumap-draw）');
                     }
                     this.loadJSAPI();
                 }

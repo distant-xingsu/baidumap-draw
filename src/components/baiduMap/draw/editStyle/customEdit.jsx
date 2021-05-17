@@ -3,9 +3,8 @@ import React from 'react'
 import { connect } from "react-redux";
 import '../../assest/css/baidumap.css'
 import { Button, Input, message, Select, Switch } from 'antd';
-import { ChromePicker } from "react-color";
-import { isClickFun, isDbClickFun, setColorFun, setComColorFun, setCustom, setFontdataFun, setNamedataFun } from '../../utils/componutils'
-import { childrenSelect } from '../../utils/defaultParame'
+import { isClickFun, isDbClickFun,  setCustom, setNamedataFun } from '../../utils/componutils'
+import $ from 'jquery'
 // import actions from "../redux/actions";
 
 const { Option } = Select;
@@ -15,18 +14,13 @@ class CustomEdit extends React.Component {
     constructor( props ) {
         super( props );
         this.state = {
-            isColorShow: false, // 是否显示颜色调试器
-            isColorShowName: '', // 颜色调试器 （类型）名称
-            colorData: '', // 颜色数据
             /* ************ ---------添加时候的缓存区域--------- ************************/
             addCustomOverlaydata: {
                 isClick: false,
                 isDbClick: false,
                 name: '',
-                title:'',
                 style: {
                     dom: '',
-                    color: '#fff',
                 }
             },
         }
@@ -36,6 +30,8 @@ class CustomEdit extends React.Component {
     componentDidMount() {
         // 赋值
         this.props.init( this );
+        // ref
+        this.props.onRef&&this.props.onRef(this);
     };
 
     // out
@@ -59,45 +55,52 @@ class CustomEdit extends React.Component {
                 return
             }
             if ( fatherData.info ) {
-                map.removeOverlay( fatherData.info.overlay )
+                map.removeOverlay( fatherData.info )
             }
             resultMapView( 1, 'custom', newCircledata )
         }
         else if ( type === 2 ) {
             if ( fatherData.info ) {
-                map.removeOverlay( fatherData.info.overlay )
+                map.removeOverlay( fatherData.info )
             }
             chicerData.name = '';
-            chicerData.title = '';
             chicerData.isClick = false;
             chicerData.isDbClick = false;
             chicerData.style = {
-                color: '#fff',
                 dom: '',
             }
             this.setState( {
                 addCustomOverlaydata: chicerData,
-                isColorShow: false,
-                isColorShowName: '',
-                colorData: '',
             } )
             resultMapView( 2, 'custom' )
         }
     }
 
+    // 更改
+    upDataFun( _this,_type,_key ) {
+        if ( _type === 'addCustomOverlaydata' ) {
+            let newobj = Object.assign( _this.props.addCustomOverlaydata, _this.state.addCustomOverlaydata );
+            if ( newobj.info ) {
+                if(_key==='dom'){
+                    $(newobj.info._div).html(newobj.style[_key])
+                }
+            }
+        }
+    }
+
     // 渲染
     render() {
-        let { isColorShow, isColorShowName, colorData } = this.state;
         let { addCustomOverlaydata } = this.state;
+        let {keyCustomData_BD} = this.props;
 
         return (
             <>
                 <span>背景类型：</span>
                 <Select size={ 'small' } style={ { width: '10rem' } } placeholder="请选择图片" onChange={ setCustom.bind( this ) }>
                     {
-                        childrenSelect && childrenSelect.map( ( item ) => {
+                        keyCustomData_BD && keyCustomData_BD.map( ( item,index ) => {
                             return (
-                                <Option key={ item.id } value={ item.dom } title={ item.title }>
+                                <Option key={ index } value={ item.dom } title={ item.title }>
                                     { item.title } <img src={ item.img } style={ {
                                     width: '1.5em',
                                     height: '1.5em',
@@ -110,26 +113,6 @@ class CustomEdit extends React.Component {
                         } )
                     }
                 </Select><br/>
-                <span>文本内容：</span>
-                <Input style={ { width: '10rem' } } size={ "small" } placeholder="请输入内容" maxLength={ 45 } value={ addCustomOverlaydata.title } onChange={ setFontdataFun.bind( this, 'addCustomOverlaydata' ) }/><br/>
-                <span>文字颜色：</span>
-                {
-                    isColorShowName === 'color' ?
-                    ( <i style={ { background: addCustomOverlaydata.style.color } }/> ) :
-                    (
-                        <i onClick={ setColorFun.bind( this, 1, true, 'color', addCustomOverlaydata.style.color ) } style={ { background: addCustomOverlaydata.style.color } }/> )
-                }
-                {
-                    isColorShowName === 'color' ?
-                    (
-                        <span className="drawingmanagerutil_classBtn" onClick={ setColorFun.bind( this, 2, false, 'addCustomOverlaydata', 'color', colorData ) }>选择</span> ) :
-                    (
-                        <span className="drawingmanagerutil_classBtn" onClick={ setColorFun.bind( this, 1, true, 'color', addCustomOverlaydata.style.color ) }>打开</span> )
-                }
-                {
-                    isColorShow && isColorShowName === 'color' &&
-                    <span className="drawingmanagerutil_classBtn" onClick={ setColorFun.bind( this, 3, false ) }>取消</span>
-                }<br/>
                 <span>建筑物名称：</span>
                 <Input style={ { width: '10rem' } } size={ "small" } placeholder="名称" maxLength={ 45 } value={ addCustomOverlaydata.name } onChange={ setNamedataFun.bind( this, 'addCustomOverlaydata' ) }/><br/>
                 <span>是否开启点击功能：</span>
@@ -140,12 +123,6 @@ class CustomEdit extends React.Component {
                 <Button type="primary" size={ 'small' } onClick={ () => this.addCustomdataFun( 1 ) }>保存</Button>
                 <Button type="primary" danger size={ 'small' } onClick={ () => this.addCustomdataFun( 2 ) } style={ { marginLeft: '0.2rem' } }>取消</Button>
 
-                {
-                    isColorShow &&
-                    <div className="drawingmanagerutil_color">
-                        <ChromePicker color={ colorData } onChange={ setComColorFun.bind( this ) }/>
-                    </div>
-                }
             </>
         )
     }
@@ -153,7 +130,7 @@ class CustomEdit extends React.Component {
 
 const mapStateToProps = ( state ) => {
     return {
-        // isDeveloperEditProp_BD:state.vars.isDeveloperEditProp_BD,
+        keyCustomData_BD: state.lists.keyCustomData_BD,
     }
 };
 

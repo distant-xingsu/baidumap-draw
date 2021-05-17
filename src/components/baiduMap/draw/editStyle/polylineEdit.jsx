@@ -6,6 +6,7 @@ import { Button, Input, InputNumber, message, Select, Switch } from 'antd';
 import { ChromePicker } from "react-color";
 import { isClickFun, isDbClickFun, setBorderType, setColorFun, setComColorFun, setNamedataFun, setWidthdataFun } from '../../utils/componutils'
 import { childrencircleSelect } from '../../utils/defaultParame'
+import { getRgbaAlp, hexify } from "../../utils/colorType";
 // import actions from "../redux/actions";
 
 const { Option } = Select;
@@ -36,6 +37,8 @@ class PolylineEdit extends React.Component {
     componentDidMount() {
         // 赋值
         this.props.init( this );
+        // ref
+        this.props.onRef&&this.props.onRef(this);
     };
 
     // out
@@ -59,13 +62,13 @@ class PolylineEdit extends React.Component {
                 return
             }
             if ( fatherData.info ) {
-                map.removeOverlay( fatherData.info.overlay )
+                map.removeOverlay( fatherData.info)
             }
             resultMapView( 1, 'polyline', newPolylinedata )
         }
         else if ( type === 2 ) {
             if ( fatherData.info ) {
-                map.removeOverlay( fatherData.info.overlay )
+                map.removeOverlay( fatherData.info )
             }
             chicerData.name = '';
             chicerData.isClick = false;
@@ -82,6 +85,34 @@ class PolylineEdit extends React.Component {
                 colorData: '',
             } )
             resultMapView( 2, 'polyline' )
+        }
+    }
+
+    // 更改
+    upDataFun( _this,_type,_key ) {
+        if ( _type === 'addPolylineData' ) {
+            let newobj = Object.assign(_this.props.addPolylineData, _this.state.addPolylineData);
+            if(newobj.info){
+                if(_key==='strokeStyle'){
+                    let color1 = newobj.info.getStrokeColor()
+                    newobj.info.setStrokeStyle(newobj.style[_key])
+                    newobj.info.setStrokeColor('#000')
+                    setTimeout(function (  ) {
+                        newobj.info.setStrokeColor(color1)
+                    },0)
+                }else if(_key==='strokeWeight'){
+                    newobj.info.setStrokeWeight(newobj.style[_key])
+                }else if(_key==='strokeColor'){
+                    let newstrokeColor = newobj.style ?
+                                         newobj.style.strokeColor ? hexify( newobj.style[_key] ) : '#195266' :
+                                         '#195266';
+                    let newstrokeColorOpacity = newobj.style ?
+                                                newobj.style.strokeColor ? getRgbaAlp( newobj.style[_key] ) : 1.0 :
+                                                1.0;
+                    newobj.info.setStrokeColor(newstrokeColor)
+                    newobj.info.setStrokeOpacity(newstrokeColorOpacity)
+                }
+            }
         }
     }
 

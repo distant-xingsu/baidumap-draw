@@ -169,30 +169,22 @@ const childrenmarkerSelect = [
 // 下拉列表选择图片
 const childrenSelect = [
     {
-        id: 1,
-        title: '小风机1',
-        value: '图便1',
+        title: '风机1',
         img: fnegjiBlue,
         dom: '<div style="width: 3rem;height: 3rem;text-align: center;line-height: 1.5rem;background-size: cover;background-image: url(' + fnegjiBlue + ')"></div>',
     },
     {
-        id: 2,
-        title: '小风机2',
-        value: '图便2',
+        title: '风机2',
         img: fnegjiRed,
         dom: '<div style="width: 3rem;height: 3rem;text-align: center;line-height: 1.5rem;background-size: cover;background-image: url(' + fnegjiRed + ')"></div>',
     },
     {
-        id: 3,
-        title: '小风机3',
-        value: '图便3',
+        title: '风机3',
         img: fnegjiGreen,
         dom: '<div style="width: 3rem;height: 3rem;text-align: center;line-height: 1.5rem;background-size: cover;background-image: url(' + fnegjiGreen + ')"></div>',
     },
     {
-        id: 4,
-        title: '小风机4',
-        value: '图便4',
+        title: '风机4',
         img: fnegjiWhite,
         dom: '<div style="width: 3rem;height: 3rem;text-align: center;line-height: 1.5rem;background-size: cover;background-image: url(' + fnegjiWhite + ')"></div>',
     }

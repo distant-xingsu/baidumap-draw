@@ -5,6 +5,7 @@ import { showDeleteConfirm1 } from '../utils/delModal'
 import { message } from "antd";
 import actions from "../redux/actions";
 import { connect } from "react-redux";
+import $ from 'jquery'
 
 class PlaneLabel extends React.Component {
     // load
@@ -122,7 +123,9 @@ class PlaneLabel extends React.Component {
                 if ( item.data && itemshow ) {
                     let newdata = new BMapGL.Point( item.data[0], item.data[1] );
                     let newsdomid = item.id ? item.id : GenNonDuplicateID();
-                    let newdom = new BMapGL.Label( item.title, {
+                    let textDom = "<span class='baidu-label-span' style='padding: 0 5px'>"+item.title+"<span>"
+
+                    let newdom = new BMapGL.Label( textDom, {
                         domid: newsdomid,
                         domtype: 'planeDataLabelRoot', //自定义类型
                         domindex: itemindex,
@@ -130,8 +133,15 @@ class PlaneLabel extends React.Component {
                     } );
 
                     map.addOverlay( newdom );
-                    item.style.padding = '0 5px';
                     newdom.setStyle( item.style )
+
+                    // map.addEventListener("zoomend", function () {
+                    //     var currentZoom = this.getZoom();
+                    //     let $mymaptip = $('span.baidu-label-span')
+                    //     $mymaptip.parent()[currentZoom<=16?'hide':'show']();
+                    //     $mymaptip.parent().css("font-size",32-currentZoom);
+                    //
+                    // });
 
                     if ( isEnableDragging ) {
                         // 双击事件 双击删除
@@ -166,8 +176,9 @@ class PlaneLabel extends React.Component {
             if ( item.data && itemshow ) {
                 let newdata = new BMapGL.Point( item.data[0], item.data[1] );
                 let newsdomid = item.id ? item.id : GenNonDuplicateID();
+                let textDom = "<span class='baidu-label-span' style='padding: 0 5px'>+item.title+<span>"
 
-                let newdom = new BMapGL.Label( item.title, {
+                let newdom = new BMapGL.Label( textDom, {
                     domid: newsdomid,
                     domtype: 'planeDataLabelRoot', //自定义类型
                     domindex: itemindex,
@@ -175,8 +186,15 @@ class PlaneLabel extends React.Component {
                 } );
 
                 map.addOverlay( newdom );
-                item.style.padding = '0 5px';
                 newdom.setStyle( item.style )
+
+                // map.addEventListener("zoomend", function () {
+                //     var currentZoom = this.getZoom();
+                //     let $mymaptip = $('span.baidu-label-span')
+                //     $mymaptip.parent()[currentZoom<=11?'hide':'show']();
+                //     $mymaptip.parent().css("font-size",30-currentZoom);
+                //
+                // });
 
                 if ( isEnableDragging ) {
                     // 双击事件 双击删除

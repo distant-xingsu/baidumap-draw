@@ -34,6 +34,8 @@ class FonttextEdit extends React.Component {
     componentDidMount() {
         // 赋值
         this.props.init( this );
+        // ref
+        this.props.onRef&&this.props.onRef(this);
     };
 
     // out
@@ -61,13 +63,13 @@ class FonttextEdit extends React.Component {
                 return
             }
             if ( fatherData.info ) {
-                map.removeOverlay( fatherData.info.overlay )
+                map.removeOverlay( fatherData.info )
             }
             resultMapView( 1, 'fonttext', newCircledata )
         }
         else if ( type === 2 ) {
             if ( fatherData.info ) {
-                map.removeOverlay( fatherData.info.overlay )
+                map.removeOverlay( fatherData.info )
             }
             chicerData.name = '';
             chicerData.title = '';
@@ -85,6 +87,20 @@ class FonttextEdit extends React.Component {
                 colorData: '',
             } )
             resultMapView( 2, 'fonttext' )
+        }
+    }
+
+    // 更改
+    upDataFun( _this,_type,_key ){
+        if(_type==='addLabeldata'){
+            let newobj = Object.assign(_this.props.addLabeldata, _this.state.addLabeldata);
+            if(newobj.info){
+                if(_key==='title'){
+                    newobj.info.setContent(newobj[_key])
+                }else if(_key==='backgroundColor'||_key==='color'||_key==='borderColor'){
+                    newobj.info.setStyle(newobj.style)
+                }
+            }
         }
     }
 

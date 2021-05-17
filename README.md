@@ -60,7 +60,8 @@ export default App
 | onMapOverClickFun   | fun      | null                                                         | no   | 左键 鼠标单击某一建筑物 返回单击事件- 非编辑模式下 |
 | onMapOverdbClickFun | fun      | null                                                         | no   | 左键 鼠标双击某一建筑物 返回双击事件- 非编辑模式下 |
 | addDataResultFun    | fun      | null                                                         | no   | 添加时候返回的数据方法  -  编辑模式下              |
-| delDataResultFun    | fun      | null                                                         | no   | 删除时候返回的数据方法  - 编辑模式下               | |      |                                                    |
+| delDataResultFun    | fun      | null                                                         | no   | 删除时候返回的数据方法  - 编辑模式下               |
+| keyCustomData       | array    | [{     title: '图1',     img: '',     dom: '<div>dom2</div>', }, {     title: '图2',     img: '',     dom: '<div >dom1</div>', }] | no   | 自定义图层key，添加自定义图层时的列表。            |
 
 
 
@@ -96,7 +97,7 @@ export default App
 | planeDataCustom   | array    | null   | no   | 数据平面-自定义覆盖物 |
 | planeDataCricle   | array    | null   | no   | 数据平面-圆           |
 
-###### le:
+###### le:(`颜色用rgba(x,x,x,x)`)
 
 ```
 baiduData: {

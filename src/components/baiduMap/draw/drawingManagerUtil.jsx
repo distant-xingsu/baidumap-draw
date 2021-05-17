@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import '../assest/css/baidumap.css'
 import { AppstoreFilled, BlockOutlined, BorderOutlined, BoxPlotOutlined,  EnvironmentOutlined, EuroOutlined, FontColorsOutlined, RetweetOutlined, RiseOutlined } from '@ant-design/icons'; //BuildFilled,
 import { message } from 'antd';
-import { labelOptions, styleOptions } from '../utils/defaultParame'
+import { getIcons, labelOptions, styleOptions } from '../utils/defaultParame'
 import FonttextEdit from "./editStyle/fonttextEdit";
 import PolylineEdit from "./editStyle/polylineEdit";
 import MarkerEdit from "./editStyle/markerEdit";
@@ -16,13 +16,25 @@ import G3dPCREdit from "./editStyle/G3dPCREdit";
 import M3dPCREdit from "./editStyle/m3dPCREdit";
 import $ from "jquery";
 import '../assest/css/DrawingManager.min.css'
+import GenNonDuplicateID from "../utils/randomNumId";
+import { getRgbaAlp, hexify } from "../utils/colorType";
+import CustomOverlayDom from "../utils/CustomOverlayDom";
 
 class DrawingManagerUtil extends React.Component {
     // load
     constructor( props ) {
         super( props );
-        this.myDrawingManager = undefined;
         this.onClickMapEdit = this.onClickMapEdit.bind( this );
+        this.myDrawingManager = undefined;
+
+        this.add3dPolyDataRefs = React.createRef();
+        this.addLabeldataRefs = React.createRef();
+        this.addPolylineDataRefs = React.createRef();
+        this.addMarkerDataRefs = React.createRef();
+        this.addCircleDataRefs = React.createRef();
+        this.addPolygonDataRefs = React.createRef();
+        this.addCustomOverlaydataRefs = React.createRef();
+
         this.state = {
             drawingModeValue: '', //当前绘制模式
             drawingModeType: 'plane',//编辑大模块  默认平面 3d/plane/g3
@@ -211,27 +223,36 @@ class DrawingManagerUtil extends React.Component {
                     resultpoints = resultpoints.filter( item => item );// 去重
                     let addPolylineData = _this.state.addPolylineData;
                     addPolylineData.data = resultpoints;
-                    addPolylineData.info = info;
+                    //addPolylineData.info = info;
+                    _this.props.map.removeOverlay(info.overlay )
                     _this.setState( {
                         addPolylineData
+                    },()=>{
+                        _this.addDataAll('polyline',resultpoints);
                     } )
                 } )
                 break;
             case "circle":
                 let addCircleData = _this.state.addCircleData;
                 addCircleData.data = resultvalues;
-                addCircleData.info = info;
+                // addCircleData.info = info;
+                _this.props.map.removeOverlay(info.overlay )
                 addCircleData.radius = radius;
                 _this.setState({
                     addCircleData,
+                },()=>{
+                    _this.addDataAll('circle',resultvalues,radius);
                 })
                 break;
             case "marker":
                 let addMarkerData = _this.state.addMarkerData;
                 addMarkerData.data = resultvalues;
-                addMarkerData.info = info;
+                // addMarkerData.info = info;
+                _this.props.map.removeOverlay(info.overlay )
                 _this.setState({
                     addMarkerData,
+                },()=>{
+                    _this.addDataAll('marker',resultvalues);
                 })
                 break;
             case "polygon":
@@ -245,9 +266,12 @@ class DrawingManagerUtil extends React.Component {
                     resultpoints = resultpoints.filter( item => item );// 去重
                     let addPolygonData = _this.state.addPolygonData;
                     addPolygonData.data = resultpoints;
-                    addPolygonData.info = info;
+                    // addPolygonData.info = info;
+                    _this.props.map.removeOverlay(info.overlay )
                     _this.setState( {
                         addPolygonData
+                    },()=>{
+                        _this.addDataAll('polygon',resultpoints);
                     } )
                 } )
                 break;
@@ -261,26 +285,35 @@ class DrawingManagerUtil extends React.Component {
                     resultpoints = resultpoints.filter( item => item );// 去重
                     let addPolygonData = _this.state.addPolygonData;
                     addPolygonData.data = resultpoints;
-                    addPolygonData.info = info;
+                    // addPolygonData.info = info;
+                    _this.props.map.removeOverlay(info.overlay )
                     _this.setState( {
                         addPolygonData
+                    },()=>{
+                        _this.addDataAll('polygon',resultpoints);
                     } )
                 } )
                 break;
             case "fonttext":
                 let addLabeldata = _this.state.addLabeldata;
                 addLabeldata.data = resultvalues;
-                addLabeldata.info = info;
+                //addLabeldata.info = info;
+                _this.props.map.removeOverlay(info.overlay )
                 _this.setState({
                     addLabeldata,
+                },()=>{
+                    _this.addDataAll('fonttext',resultvalues);
                 })
                 break;
             case "custom":
                 let addCustomOverlaydata = _this.state.addCustomOverlaydata;
                 addCustomOverlaydata.data = resultvalues;
-                addCustomOverlaydata.info = info;
+                // addCustomOverlaydata.info = info;
+                _this.props.map.removeOverlay(info.overlay )
                 _this.setState({
                     addCustomOverlaydata,
+                },()=>{
+                    _this.addDataAll('custom',resultvalues);
                 })
                 break;
             case "G3dpolygon":
@@ -294,9 +327,12 @@ class DrawingManagerUtil extends React.Component {
                     resultpoints = resultpoints.filter( item => item );// 去重
                     let add3dPolyData = _this.state.add3dPolyData;
                     add3dPolyData.data = resultpoints;
-                    add3dPolyData.info = info;
+                    // add3dPolyData.info = info;
+                    _this.props.map.removeOverlay(info.overlay )
                     _this.setState( {
                         add3dPolyData
+                    },()=>{
+                        _this.addDataAll('G3dpolygon',resultpoints);
                     } )
                 } )
                 break;
@@ -310,10 +346,13 @@ class DrawingManagerUtil extends React.Component {
                     resultpoints = resultpoints.filter( item => item );// 去重
                     let add3dPolyData = _this.state.add3dPolyData;
                     add3dPolyData.data = resultpoints;
-                    add3dPolyData.info = info;
+                    // add3dPolyData.info = info;
+                    _this.props.map.removeOverlay(info.overlay )
                     _this.setState( {
                         add3dPolyData
-                    } )
+                    },()=>{
+                        _this.addDataAll('G3dpolygon',resultpoints);
+                    })
                 } )
                 break;
             case "G3dcircle":
@@ -326,10 +365,13 @@ class DrawingManagerUtil extends React.Component {
                     resultpoints = resultpoints.filter( item => item );// 去重
                     let add3dPolyData = _this.state.add3dPolyData;
                     add3dPolyData.data = resultpoints;
-                    add3dPolyData.info = info;
+                    // add3dPolyData.info = info;
+                    _this.props.map.removeOverlay(info.overlay )
                     _this.setState( {
                         add3dPolyData
-                    } )
+                    } ,()=>{
+                        _this.addDataAll('G3dpolygon',resultpoints);
+                    })
                 } )
                 break;
             case "3dpolygon":
@@ -439,6 +481,262 @@ class DrawingManagerUtil extends React.Component {
         } );
     }
 
+    // 添加数据
+    addDataAll(_type,_data,_other){
+        let { map } = this.props;
+        switch (_type) {
+            case 'G3dpolygon':
+                let G3dpolygon_item = this.add3dPolyDataRefs&&this.add3dPolyDataRefs.state.add3dPolyData;
+                let add3dPolyData = this.state.add3dPolyData;
+                let G3dpolygon_newdata = []; // 数据
+                let G3dpolygon_newsdomid = GenNonDuplicateID();
+                let G3dpolygon_newtopFillColor = G3dpolygon_item.style ?
+                                                 G3dpolygon_item.style.topFillColor ? hexify( G3dpolygon_item.style.topFillColor ) : "#00c5ff" :
+                                                 "#00c5ff";//顶面的颜色，同CSS颜色
+                let G3dpolygon_newtopFillOpacity = G3dpolygon_item.style ?
+                                                   G3dpolygon_item.style.topFillColor ? getRgbaAlp( G3dpolygon_item.style.topFillColor ) : 1.0 :
+                                                   1.0;//顶面透明度，范围0-1
+                let G3dpolygon_newsideFillColor = G3dpolygon_item.style ?
+                                                  G3dpolygon_item.style.sideFillColor ? hexify( G3dpolygon_item.style.sideFillColor ) : '#195266' :
+                                                  '#195266';//测面填充颜色，同CSS颜色  "#195266"
+                let G3dpolygon_newsideFillOpacity = G3dpolygon_item.style ?
+                                                    G3dpolygon_item.style.sideFillColor ? getRgbaAlp( G3dpolygon_item.style.sideFillColor ) : 1.0 :
+                                                    1.0;// 测面填充的透明度，范围0-1
+                for ( let j = 0; j < _data.length; j ++ ) {
+                    let resuitem = _data[j];
+                    let point = new BMapGL.Point( resuitem[0], resuitem[1] )
+                    G3dpolygon_newdata.push( point )
+                }
+                let G3dpolygon_newdom = new BMapGL.Prism( G3dpolygon_newdata, G3dpolygon_item.height ? G3dpolygon_item.height : 20, {
+                    domid: G3dpolygon_newsdomid,
+                    domtype: 'standDataPoylonAdd', //自定义类型
+                    topFillColor: G3dpolygon_newtopFillColor,
+                    topFillOpacity: G3dpolygon_newtopFillOpacity,
+                    sideFillColor: G3dpolygon_newsideFillColor,
+                    sideFillOpacity: G3dpolygon_newsideFillOpacity,
+                    enableEditing: false,//可编辑
+                } );
+
+                map.addOverlay( G3dpolygon_newdom );
+
+                add3dPolyData.info = G3dpolygon_newdom;
+                this.setState( {
+                    add3dPolyData
+                })
+                break
+            case 'fonttext':
+                let fonttext_item = this.addLabeldataRefs&&this.addLabeldataRefs.state.addLabeldata;
+                let addLabeldata = this.state.addLabeldata;
+                let fonttext_newdata = new BMapGL.Point( _data[0], _data[1] );
+                let fonttext_newsdomid = GenNonDuplicateID();
+
+                let fonttext_newdom = new BMapGL.Label( fonttext_item.title?fonttext_item.title:'在这里', {
+                    domid: fonttext_newsdomid,
+                    domtype: 'planeDataLabelAdd', //自定义类型
+                    position: fonttext_newdata,
+                } );
+
+                map.addOverlay( fonttext_newdom );
+                fonttext_item.style.padding = '0 5px';
+                fonttext_newdom.setStyle( fonttext_item.style )
+                addLabeldata.info = fonttext_newdom;
+                this.setState( {
+                    addLabeldata
+                })
+                break
+            case 'polyline':
+                let polyline_item = this.addPolylineDataRefs&&this.addPolylineDataRefs.state.addPolylineData;
+                let addPolylineData = this.state.addPolylineData;
+                let polyline_newdata = []; // 数据
+                let polyline_newsdomid = GenNonDuplicateID();
+                let polyline_newstrokeColor = polyline_item.style ?
+                                              polyline_item.style.strokeColor ? hexify( polyline_item.style.strokeColor ) : "#00c5ff" :
+                                              "#00c5ff"; // 描边颜色
+                let polyline_newsstrokeOpacity = polyline_item.style ?
+                                                 polyline_item.style.strokeColor ? getRgbaAlp( polyline_item.style.strokeColor ) : 1.0 :
+                                                 1.0; // 描边透明度
+                let polyline_newsstrokeStyle = polyline_item.style ?
+                                               polyline_item.style.strokeStyle ? polyline_item.style.strokeStyle : 'solid' :
+                                               'solid';  //"solid" | "dashed" | "dotted"
+                let polyline_newsstrokeWeight = polyline_item.style ? polyline_item.style.strokeWeight ? polyline_item.style.strokeWeight : 2 : 2; // 描边宽度
+
+                for ( let j = 0; j < _data.length; j ++ ) {
+                    let resuitem = _data[j];
+                    let point = new BMapGL.Point( resuitem[0], resuitem[1] )
+                    polyline_newdata.push( point )
+                }
+
+                let polyline_newdom = new BMapGL.Polyline( polyline_newdata, {
+                    domid: polyline_newsdomid,
+                    domtype: 'planeDataPolyLineAdd', //自定义类型
+                    strokeColor: polyline_newstrokeColor,
+                    strokeOpacity: polyline_newsstrokeOpacity,
+                    strokeStyle: polyline_newsstrokeStyle,
+                    strokeWeight: polyline_newsstrokeWeight,
+
+                    enableEditing: false,//可编辑
+                    geodesic: false,//大地线
+                } );
+
+                map.addOverlay( polyline_newdom );
+
+                addPolylineData.info = polyline_newdom;
+                this.setState( {
+                    addPolylineData
+                })
+
+                break
+            case 'marker':
+                let marker_item = this.addMarkerDataRefs&&this.addMarkerDataRefs.state.addMarkerData;
+                let addMarkerData = this.state.addMarkerData;
+                let marker_newdata = new BMapGL.Point( _data[0], _data[1] );
+                let marker_newsdomid = GenNonDuplicateID();
+                let marker_newdom = new BMapGL.Marker( marker_newdata, {
+                    domid: marker_newsdomid,
+                    domtype: 'planeDataMarkerAdd', //自定义类型
+                    icon: getIcons( marker_item.imgSrc ? marker_item.imgSrc : 'simple_red' ),
+                    enableEditing: false,//可编辑
+                } );
+                map.addOverlay( marker_newdom );
+                // 为标注添加文本标注
+                let marker_markerlabel = new BMapGL.Label( marker_item.title, {
+                    offset: setOfFset( marker_item.title ) // 设置文本偏移量
+                } )
+                marker_newdom.setLabel( marker_markerlabel )
+                marker_markerlabel.setStyle( {
+                    color: marker_item.style.color ? marker_item.style.color : '#fff',
+                    backgroundColor: marker_item.style.backgroundColor ? marker_item.style.backgroundColor : 'rgba(0,0,0,0)',
+                    borderColor: marker_item.style.borderColor ? marker_item.style.borderColor : 'rgba(0,0,0,0)',
+                    fontSize: '14px',
+                    padding: '0 5px'
+                } )
+                addMarkerData.info = marker_newdom;
+                this.setState( {
+                    addMarkerData
+                })
+                break
+            case 'polygon':
+                let polygon_item = this.addPolygonDataRefs&&this.addPolygonDataRefs.state.addPolygonData;
+                let addPolygonData = this.state.addPolygonData;
+
+                let polygon_newdata = []; // 数据
+                let polygon_newsdomid = GenNonDuplicateID();
+                let polygon_newstrokeColor = polygon_item.style ?
+                                             polygon_item.style.strokeColor ? hexify( polygon_item.style.strokeColor ) : "#00c5ff" :
+                                             "#00c5ff"; // 描边颜色
+                let polygon_newsstrokeOpacity = polygon_item.style ?
+                                                polygon_item.style.strokeColor ? getRgbaAlp( polygon_item.style.strokeColor ) : 1.0 :
+                                                1.0; // 描边透明度
+                let polygon_newsstrokeStyle = polygon_item.style ?
+                                              polygon_item.style.strokeStyle ? polygon_item.style.strokeStyle : 'solid' :
+                                              'solid';  //"solid" | "dashed" | "dotted"
+                let polygon_newsstrokeWeight = polygon_item.style ? polygon_item.style.strokeWeight ? polygon_item.style.strokeWeight : 2 : 2; // 描边宽度
+
+                let polygon_newfillColor = polygon_item.style ?
+                                           polygon_item.style.fillColor ? hexify( polygon_item.style.fillColor ) : '#00c5ff' :
+                                           '#00c5ff'; //面填充颜色，同CSS颜色  "#195266"
+                let polygon_newfillOpacity = polygon_item.style ? polygon_item.style.fillColor ? getRgbaAlp( polygon_item.style.fillColor ) : 1.0 : 1.0; // 面填充的透明度，范围0-1
+
+                for ( let j = 0; j < _data.length; j ++ ) {
+                    let resuitem = _data[j];
+                    let point = new BMapGL.Point( resuitem[0], resuitem[1] )
+                    polygon_newdata.push( point )
+                }
+
+                let polygon_newdom = new BMapGL.Polygon( polygon_newdata, {
+                    domid: polygon_newsdomid,
+                    domtype: 'planeDataPolyGonAdd', //自定义类型
+                    strokeColor: polygon_newstrokeColor,
+                    strokeOpacity: polygon_newsstrokeOpacity,
+                    strokeStyle: polygon_newsstrokeStyle,
+                    strokeWeight: polygon_newsstrokeWeight,
+                    fillColor: polygon_newfillColor,
+                    fillOpacity: polygon_newfillOpacity,
+                    enableEditing: false,//可编辑
+                } );
+
+                map.addOverlay( polygon_newdom );
+
+                addPolygonData.info = polygon_newdom;
+                this.setState( {
+                    addPolygonData
+                })
+
+                break
+            case 'circle':
+                let circle_item = this.addCircleDataRefs&&this.addCircleDataRefs.state.addCircleData;
+                let addCircleData = this.state.addCircleData;
+
+                let circle_newdata = new BMapGL.Point( _data[0], _data[1] );
+                let circle_newsdomid = GenNonDuplicateID();
+                let circle_newstrokeColor = circle_item.style ?
+                                            circle_item.style.strokeColor ? hexify( circle_item.style.strokeColor ) : "#00c5ff" :
+                                            "#00c5ff"; // 描边颜色
+                let circle_newsstrokeOpacity = circle_item.style ?
+                                               circle_item.style.strokeColor ? getRgbaAlp( circle_item.style.strokeColor ) : 1.0 :
+                                               1.0; // 描边透明度
+                let circle_newsstrokeStyle = circle_item.style ?
+                                             circle_item.style.strokeStyle ? circle_item.style.strokeStyle : 'solid' :
+                                             'solid';  //"solid" | "dashed" | "dotted"
+                let circle_newsstrokeWeight = circle_item.style ? circle_item.style.strokeWeight ? circle_item.style.strokeWeight : 2 : 2; // 描边宽度
+
+                let circle_newfillColor = circle_item.style ?
+                                          circle_item.style.fillColor ? hexify( circle_item.style.fillColor ) : '#00c5ff' :
+                                          '#00c5ff'; //面填充颜色，同CSS颜色  "#195266"
+                let circle_newfillOpacity = circle_item.style ? circle_item.style.fillColor ? getRgbaAlp( circle_item.style.fillColor ) : 1.0 : 1.0; // 面填充的透明度，范围0-1
+
+                let circle_newdom = new BMapGL.Circle( circle_newdata, _other ? _other : 100,  {
+                    domid: circle_newsdomid,
+                    domtype: 'planeDataCricleAdd', //自定义类型
+                    strokeColor: circle_newstrokeColor,
+                    strokeOpacity: circle_newsstrokeOpacity,
+                    strokeStyle: circle_newsstrokeStyle,
+                    strokeWeight: circle_newsstrokeWeight,
+                    fillColor: circle_newfillColor,
+                    fillOpacity: circle_newfillOpacity,
+
+                    enableEditing: false,//可编辑
+                } );
+
+                map.addOverlay( circle_newdom );
+
+                addCircleData.info = circle_newdom;
+                this.setState( {
+                    addCircleData
+                })
+                break
+            case 'custom':
+                let custom_item = this.addCustomOverlaydataRefs&&this.addCustomOverlaydataRefs.state.addCustomOverlaydata;
+                let addCustomOverlaydata = this.state.addCustomOverlaydata;
+                let custom_newdata = new BMapGL.Point( _data[0], _data[1] );
+                let custom_newsdomid = GenNonDuplicateID();
+                let custom_olddom = custom_item.style ? custom_item.style.dom ? custom_item.style.dom : '<div style="color: #fff;width: 100px;">在这里</div>' : '<div style="color: #fff;width: 100px;">在这里</div>';
+                let custom_newdom = new CustomOverlayDom( custom_newdata, {
+                    html: <div id={ custom_newsdomid } style={{textAlign:'center'}}>
+                        <div dangerouslySetInnerHTML={ { __html: custom_olddom } }/>
+                    </div>,
+                    config: {
+                        domtype: 'planeDataCustomAdd',
+                        domid: custom_newsdomid
+                    }
+                } )
+                map.addOverlay( custom_newdom );
+                addCustomOverlaydata.info = custom_newdom;
+                this.setState( {
+                    addCustomOverlaydata
+                })
+                break
+            default:
+        }
+        function setOfFset( data ) {
+            let lodSize;
+            let dataleng = data.length;
+            dataleng = dataleng * 8;
+            lodSize = new BMapGL.Size( - dataleng, 15 )
+            return lodSize
+        }
+    }
+
     render() {
         let { map } = this.props;
         let { drawingModeValue, drawingModeType } = this.state;
@@ -531,27 +829,27 @@ class DrawingManagerUtil extends React.Component {
                             drawingModeType === 'plane' && <>
                                 {
                                     drawingModeValue === 'fonttext' &&
-                                    <FonttextEdit map={map} addLabeldata={addLabeldata} resultMapView={ resultMapView.bind( this ) }/>
+                                    <FonttextEdit onRef={(ref)=>this.addLabeldataRefs=ref} map={map} addLabeldata={addLabeldata} resultMapView={ resultMapView.bind( this ) }/>
                                 }
                                 {
                                     drawingModeValue === 'polyline' &&
-                                    <PolylineEdit map={ map } addPolylineData={ addPolylineData } resultMapView={ resultMapView.bind( this ) }/>
+                                    <PolylineEdit onRef={(ref)=>this.addPolylineDataRefs=ref} map={ map } addPolylineData={ addPolylineData } resultMapView={ resultMapView.bind( this ) }/>
                                 }
                                 {
                                     drawingModeValue === 'marker' &&
-                                    <MarkerEdit map={map} addMarkerData={addMarkerData} resultMapView={ resultMapView.bind( this ) }/>
+                                    <MarkerEdit onRef={(ref)=>this.addMarkerDataRefs=ref} map={map} addMarkerData={addMarkerData} resultMapView={ resultMapView.bind( this ) }/>
                                 }
                                 {
                                     drawingModeValue === 'circle' &&
-                                    <CircleEdit map={map} addCircleData={addCircleData} resultMapView={ resultMapView.bind( this ) }/>
+                                    <CircleEdit onRef={(ref)=>this.addCircleDataRefs=ref} map={map} addCircleData={addCircleData} resultMapView={ resultMapView.bind( this ) }/>
                                 }
                                 {
                                     ( drawingModeValue === 'polygon' || drawingModeValue === 'rectangle' ) &&
-                                    <PolygonAndRectangleEdit map={map} addPolygonData={addPolygonData} resultMapView={ resultMapView.bind( this ) }/>
+                                    <PolygonAndRectangleEdit  onRef={(ref)=>this.addPolygonDataRefs=ref}  map={map} addPolygonData={addPolygonData} resultMapView={ resultMapView.bind( this ) }/>
                                 }
                                 {
                                     drawingModeValue === 'custom' &&
-                                    <CustomEdit map={map} addCustomOverlaydata={addCustomOverlaydata} resultMapView={ resultMapView.bind( this ) }/>
+                                    <CustomEdit  onRef={(ref)=>this.addCustomOverlaydataRefs=ref}   map={map} addCustomOverlaydata={addCustomOverlaydata} resultMapView={ resultMapView.bind( this ) }/>
                                 }
                             </>
                         }
@@ -559,7 +857,7 @@ class DrawingManagerUtil extends React.Component {
                             drawingModeType === 'G3d' && <>
                                 {
                                     ( drawingModeValue === 'G3dpolygon' || drawingModeValue === 'G3dcircle' || drawingModeValue === 'G3drectangle' ) &&
-                                    <G3dPCREdit map={map} add3dPolyData={add3dPolyData} resultMapView={ resultMapView.bind( this ) }/>
+                                    <G3dPCREdit onRef={(ref)=>this.add3dPolyDataRefs=ref} map={map} add3dPolyData={add3dPolyData} resultMapView={ resultMapView.bind( this ) }/>
                                 }
                             </>
                         }
@@ -613,10 +911,12 @@ const mapDispatchToProps = ( dispatch ) => {
         init: ( _this ) => {
 
         },
+
         // 绘制是否开启
         isDrowState:(falge) =>{
             dispatch( actions.setVars( 'isDrowState_BD', falge ) )
         },
+
         // 重新渲染结果-添加数据
         resultMapView( drawingType, drawingModeValue, drawingDate ) {
             let _this = this;
@@ -716,6 +1016,7 @@ const mapDispatchToProps = ( dispatch ) => {
                 }
             }
         },
+
         //重置数据
         ResetDataAndDraw: ( _this ) => {
             let $cancelOperate = $( '#cancelOperate' );
@@ -724,8 +1025,13 @@ const mapDispatchToProps = ( dispatch ) => {
             }
             _this.myDrawingManager.close();
 
-            if ( _this.state.addPolylineData.info ) {
-                _this.props.map.removeOverlay( _this.state.addPolylineData.info.overlay )
+            let newinfoList = ['addPolylineData','addCircleData','addMarkerData','addPolygonData','addLabeldata','addCustomOverlaydata','add3dPolyData']
+
+            for ( let i = 0; i < newinfoList.length; i ++ ) {
+                let ongitem =newinfoList[i];
+                if ( _this.state[ongitem].info ) {
+                    _this.props.map.removeOverlay( _this.state[ongitem].info )
+                }
             }
 
             _this.setState( {
@@ -753,7 +1059,7 @@ const mapDispatchToProps = ( dispatch ) => {
                     data:[],
                 },
             } )
-        }
+        },
     }
 }
 
