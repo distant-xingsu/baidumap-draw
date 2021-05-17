@@ -10,7 +10,7 @@ class App extends React.Component {
             isRoot: true,
             isAnimsmap: false,
 
-            BaidumapAk: 'ufynuUa2xyxIqbRYkWGjIPBsxhFT5eSK',//必填
+            BaidumapAk: '',//必填
             baiduOption: {
                 tiltItem: 60,//倾斜度
             },
