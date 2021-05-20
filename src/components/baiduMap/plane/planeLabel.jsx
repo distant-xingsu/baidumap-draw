@@ -5,7 +5,7 @@ import { showDeleteConfirm1 } from '../utils/delModal'
 import { message } from "antd";
 import actions from "../redux/actions";
 import { connect } from "react-redux";
-import $ from 'jquery'
+// import $ from 'jquery'
 
 class PlaneLabel extends React.Component {
     // load
